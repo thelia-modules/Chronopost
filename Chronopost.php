@@ -223,10 +223,20 @@ class Chronopost extends AbstractDeliveryModule
         }
 
         /** Check if freeshipping is activated for this delivery type */
-        $freeShipping = $deliveryType->getFreeshippingActive();
+
+        try {
+            $freeShipping = $deliveryType->getFreeshippingActive();
+        } catch (\Exception $e) {
+            $freeShipping = false;
+        }
 
         /** Get the total cart price needed to have a free shipping for all areas, if it exists */
-        $freeShippingFrom = $deliveryType->getFreeshippingFrom();
+
+        try {
+            $freeShippingFrom = $deliveryType->getFreeshippingFrom();
+        } catch (\Exception $er) {
+            $freeShippingFrom = null;
+        }
 
         /** Set the initial postage price as free (0) */
         $postage = 0;
@@ -265,8 +275,11 @@ class Chronopost extends AbstractDeliveryModule
             $cartAmountFreeShipping = ChronopostAreaFreeshippingQuery::create()
                 ->filterByAreaId($areaId)
                 ->filterByDeliveryModeId($deliveryType->getId())
-                ->findOne()
-                ->getCartAmount();
+                ->findOne();
+
+            if (null !== $cartAmountFreeShipping) {
+                $cartAmountFreeShipping->getCartAmount();
+            }
 
             /** If the cart price is superior to the minimum price for free shipping in the area of the order,
              * return the postage as free.
