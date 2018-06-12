@@ -174,7 +174,8 @@ class Chronopost extends AbstractDeliveryModule
      */
     public function getDeliveryType($request, $continue)
     {
-        static $x = 0;
+        static $x = -1;
+        $config = ChronopostConst::getConfig();
 
         $fresh13 = $request->get('chronopost-fresh13');
         $chrono13 = $request->get('chronopost-chrono13');
@@ -185,23 +186,29 @@ class Chronopost extends AbstractDeliveryModule
         } elseif ($fresh13) {
             return "2R";
         } elseif ($continue) {
+            $x++;
             switch ($x) {
                 case 0:
-                    $r = "01";
+                    if (!$config[ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_13_STATUS]) {
+                        return self::getDeliveryType($request, $continue);
+                    }
+                    return "01";
                     break;
                 case 1:
-                    $r = "2R";
+                    if (!$config[ChronopostConst::CHRONOPOST_FRESH_DELIVERY_13_STATUS]) {
+                        return self::getDeliveryType($request, $continue);
+                    }
+                    return "2R";
                     break;
                 default:
-                    $r = null;
+                    return null;
                     break;
             }
-            $x++;
         } else {
             return null;
         }
 
-        return $r;
+        return null;
     }
 
     /**
@@ -217,7 +224,8 @@ class Chronopost extends AbstractDeliveryModule
     {
         if (null === $deliveryType) {
             /** If no delivery type was given, take the first one found as default */
-            $deliveryType = ChronopostDeliveryModeQuery::create()->find()->getFirst();
+            //$deliveryType = ChronopostDeliveryModeQuery::create()->find()->getFirst();
+            return null;
         } else {
             $deliveryType = ChronopostDeliveryModeQuery::create()->findOneByCode($deliveryType);
         }
@@ -366,21 +374,28 @@ class Chronopost extends AbstractDeliveryModule
 
             /** Get the postage for the shipping zones we've just got */
             $postage = null;
+            /*
             if (null === $postage = self::getMinPostage($areaIdArray, $cartWeight, $cartAmount, $deliveryType)) {
                 $postage = self::getMinPostage($areaIdArray, $cartWeight, $cartAmount, "chrono13");
                 if (null === $postage) {
                     throw new DeliveryException("Chronopost delivery unavailable for your cart weight or delivery country");
                 }
             }
+            */
+            $postage = self::getMinPostage($areaIdArray, $cartWeight, $cartAmount, $deliveryType);
 
             /** In case of multiple postages, when displaying the expected price, for example, makes sure the minimum
              *  postage is displayed instead of the last found.
              */
             if (null === $postageResult) {
                 $postageResult = $postage;
-            } elseif ($postage < $postageResult) {
+            } elseif ($postage < $postageResult && null !== $postage) {
                 $postageResult = $postage;
             }
+        }
+
+        if (null === $postageResult) {
+            throw new DeliveryException("Chronopost delivery unavailable for your cart weight or delivery country");
         }
 
         /** If delivery is free, set it to a minimal number so the price will still appear. It will be rounded up to 0 */
