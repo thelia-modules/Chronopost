@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<routes xmlns="http://symfony.com/schema/routing"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <route id="chronopost.config.save" path="/admin/module/Chronopost/config" methods="post">
+        <default key="_controller">Chronopost\Controller\ChronopostBackOfficeController::saveAction</default>
+    </route>
+
+    <route id="chronopost.configShipper.save" path="/admin/module/Chronopost/configShipper" methods="post">
+        <default key="_controller">Chronopost\Controller\ChronopostBackOfficeController::saveActionShipper</default>
+    </route>
+
+    <route id="chronopost.save.label" path="/admin/module/Chronopost/saveLabel">
+        <default key="_controller">Chronopost\Controller\ChronopostBackOfficeController::saveLabel</default>
+    </route>
+
+
+    <route id="chronopost.toggle.freeshipping" path="/admin/module/chronopost/freeshipping" methods="post">
+        <default key="_controller">Chronopost\Controller\ChronopostFreeShippingController::toggleFreeShippingActivation</default>
+    </route>
+
+    <route id="chronopost.edit.freeshippingfrom" path="/admin/module/chronopost/freeshipping_from" methods="post">
+        <default key="_controller">Chronopost\Controller\ChronopostFreeShippingController::setFreeShippingFrom</default>
+    </route>
+
+    <route id="chronopost.edit.areafreeshipping" path="/admin/module/chronopost/area_freeshipping" methods="post">
+        <default key="_controller">Chronopost\Controller\ChronopostFreeShippingController::setAreaFreeShipping</default>
+    </route>
+
+
+    <route id="chronopost.add.price" path="/admin/module/chronopost/slice/save" methods="post">
+        <default key="_controller">Chronopost\Controller\ChronopostSliceController::saveSliceAction</default>
+    </route>
+    <route id="chronopost.update.price" path="/admin/module/chronopost/slice/delete" methods="post">
+        <default key="_controller">Chronopost\Controller\ChronopostSliceController::deleteSliceAction</default>
+    </route>
+
+
+</routes>
