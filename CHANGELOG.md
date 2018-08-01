@@ -1,4 +1,4 @@
-#OneytrustScore module changelog
+#Chronopost module changelog
  
  ##1.0
  
