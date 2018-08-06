@@ -360,12 +360,14 @@ class Chronopost extends AbstractDeliveryModule
             throw new DeliveryException("Your delivery country is not covered by Chronopost");
         }
 
+        $deliveryArray = null;
+
         if (null == $deliveryType) {
             $deliveryArray = self::forcePostage($areaIdArray, $cartWeight, $cartAmount);
         }
 
         $postage = null;
-        if ($deliveryArray) {
+        if ($deliveryArray !== null) {
             $y = 0;
             $postage = self::getMinPostage($areaIdArray, $cartWeight, $cartAmount, $deliveryArray[$y]);
 
