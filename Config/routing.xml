@@ -37,5 +37,8 @@
         <default key="_controller">Chronopost\Controller\ChronopostSliceController::deleteSliceAction</default>
     </route>
 
+    <route id="chronopost.get.coordinates" path="/admin/module/chronopost/coordinates">
+        <default key="_controller">Chronopost\Controller\ChronopostRelayController::findByAddress</default>
+    </route>
 
 </routes>

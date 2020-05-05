@@ -159,6 +159,50 @@ class ChronopostConfigurationForm extends BaseForm
                     ],
                 ]
             )
+            ->add(ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_18_STATUS,
+                "checkbox",
+                [
+                    'required'      => false,
+                    'data'          => (bool) $config[ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_18_STATUS],
+                    'label'         => Translator::getInstance()->trans("\"Chrono\" 18h Delivery (Code : 16)"),
+                    'label_attr'    => [
+                        'for'           => 'title',
+                    ],
+                ]
+            )
+            ->add(ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_13_BAL_STATUS,
+                "checkbox",
+                [
+                    'required'      => false,
+                    'data'          => (bool) $config[ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_13_BAL_STATUS],
+                    'label'         => Translator::getInstance()->trans("\"Chrono\" 13h Relay Delivery (Code : 56)"),
+                    'label_attr'    => [
+                        'for'           => 'title',
+                    ],
+                ]
+            )
+            ->add(ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_CLASSIC_STATUS,
+                "checkbox",
+                [
+                    'required'      => false,
+                    'data'          => (bool) $config[ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_CLASSIC_STATUS],
+                    'label'         => Translator::getInstance()->trans("\"Chrono\" Europe Classic Delivery (Code : 44)"),
+                    'label_attr'    => [
+                        'for'           => 'title',
+                    ],
+                ]
+            )
+            ->add(ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_EXPRESS_STATUS,
+                "checkbox",
+                [
+                    'required'      => false,
+                    'data'          => (bool) $config[ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_EXPRESS_STATUS],
+                    'label'         => Translator::getInstance()->trans("\"Chrono\" Europe Express Delivery (Code : 17)"),
+                    'label_attr'    => [
+                        'for'           => 'title',
+                    ],
+                ]
+            )
             /** @TODO Add other delivery types */
 
             /** Shipper Informations */

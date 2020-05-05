@@ -34,6 +34,10 @@ class ChronopostDeliveryMode extends BaseLoop implements PropelSearchLoopInterfa
 
         $enabledDeliveryTypes[] = $config[ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_13_STATUS] ? "01" : "";
         $enabledDeliveryTypes[] = $config[ChronopostConst::CHRONOPOST_FRESH_DELIVERY_13_STATUS] ? "2R" : "";
+        $enabledDeliveryTypes[] = $config[ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_18_STATUS] ? "16" : "";
+        $enabledDeliveryTypes[] = $config[ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_13_BAL_STATUS] ? "58" : "";
+        $enabledDeliveryTypes[] = $config[ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_CLASSIC_STATUS] ? "44" : "";
+        $enabledDeliveryTypes[] = $config[ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_EXPRESS_STATUS] ? "17" : "";
         /** @TODO Add other delivery types */
 
         $modes->filterByCode($enabledDeliveryTypes, Criteria::IN);

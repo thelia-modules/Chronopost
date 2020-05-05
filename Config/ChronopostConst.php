@@ -31,10 +31,16 @@ class ChronopostConst
     /** Status of the delivery types. Enabled|Disabled */
     const CHRONOPOST_FRESH_DELIVERY_13_STATUS       = "chronopost_fresh_delivery_13_status";
     const CHRONOPOST_DELIVERY_CHRONO_13_STATUS      = "chronopost_delivery_chrono_13_status";
+    const CHRONOPOST_DELIVERY_CHRONO_18_STATUS      = "chronopost_delivery_chrono_18_status";
+    const CHRONOPOST_DELIVERY_CHRONO_13_BAL_STATUS  = "chronopost_delivery_chrono_13_bal_status";
+    const CHRONOPOST_DELIVERY_CHRONO_CLASSIC_STATUS = "chronopost_delivery_chrono_classic_status";
+    const CHRONOPOST_DELIVERY_CHRONO_EXPRESS_STATUS = "chronopost_delivery_chrono_express_status";
     /** @TODO Add other delivery types  */
 
     /** WSDL for the Chronopost Shipping Service */
-    const CHRONOPOST_SHIPPING_SERVICE_WSDL          = "https://ws.chronopost.fr/shipping-cxf/ShippingServiceWS?wsdl";
+    const CHRONOPOST_SHIPPING_SERVICE_WSDL              = "https://ws.chronopost.fr/shipping-cxf/ShippingServiceWS?wsdl";
+    const CHRONOPOST_RELAY_SEARCH_SERVICE_WSDL          = "https://ws.chronopost.fr/recherchebt-ws-cxf/PointRelaisServiceWS?wsdl";
+    const CHRONOPOST_COORDINATES_SERVICE_WSDL           = "https://ws.chronopost.fr/rdv-cxf/services/CreneauServiceWS?wsdl";
     /** @TODO Add other WSDL config key */
 
     /** @Unused */
@@ -86,6 +92,10 @@ class ChronopostConst
             /** Delivery types */
             self::CHRONOPOST_FRESH_DELIVERY_13_STATUS   => Chronopost::getConfigValue(self::CHRONOPOST_FRESH_DELIVERY_13_STATUS),
             self::CHRONOPOST_DELIVERY_CHRONO_13_STATUS  => Chronopost::getConfigValue(self::CHRONOPOST_DELIVERY_CHRONO_13_STATUS),
+            self::CHRONOPOST_DELIVERY_CHRONO_18_STATUS  => Chronopost::getConfigValue(self::CHRONOPOST_DELIVERY_CHRONO_18_STATUS),
+            self::CHRONOPOST_DELIVERY_CHRONO_13_BAL_STATUS  => Chronopost::getConfigValue(self::CHRONOPOST_DELIVERY_CHRONO_13_BAL_STATUS),
+            self::CHRONOPOST_DELIVERY_CHRONO_CLASSIC_STATUS  => Chronopost::getConfigValue(self::CHRONOPOST_DELIVERY_CHRONO_CLASSIC_STATUS),
+            self::CHRONOPOST_DELIVERY_CHRONO_EXPRESS_STATUS  => Chronopost::getConfigValue(self::CHRONOPOST_DELIVERY_CHRONO_EXPRESS_STATUS),
             /** @TODO Add other delivery types */
 
             /** Shipper informations */
