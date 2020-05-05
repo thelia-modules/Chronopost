@@ -10,6 +10,7 @@
         <loop class="Chronopost\Loop\ChronopostLoop" name="chronopost" />
         <loop class="Chronopost\Loop\ChronopostAreaFreeshipping" name="chronopost.area.freeshipping" />
         <loop class="Chronopost\Loop\ChronopostExportLabelLoop" name="chronopost.export.label" />
+        <loop class="Chronopost\Loop\ChronopostGetRelay" name="chronopost.get.relay" />
     </loops>
 
     <forms>

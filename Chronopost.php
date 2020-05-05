@@ -21,6 +21,7 @@ use PDO;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Propel;
+use Symfony\Component\Filesystem\Filesystem;
 use Thelia\Core\HttpFoundation\Request;
 use Thelia\Core\HttpFoundation\Session\Session;
 use Thelia\Install\Database;
@@ -51,31 +52,35 @@ class Chronopost extends AbstractDeliveryModule
         }
 
         $defaultConfig = [
-            ChronopostConst::CHRONOPOST_CODE_CLIENT_RELAIS          => null,
-            ChronopostConst::CHRONOPOST_CODE_CLIENT                 => null,
-            ChronopostConst::CHRONOPOST_LABEL_DIR                   => THELIA_LOCAL_DIR . 'chronopost',
-            ChronopostConst::CHRONOPOST_LABEL_TYPE                  => "PDF",
-            ChronopostConst::CHRONOPOST_PASSWORD                    => null,
-            ChronopostConst::CHRONOPOST_TREATMENT_STATUS            => "3",
-            ChronopostConst::CHRONOPOST_PRINT_AS_CUSTOMER_STATUS    => "N",
-            ChronopostConst::CHRONOPOST_EXPIRATION_DATE             => null,
+            ChronopostConst::CHRONOPOST_CODE_CLIENT_RELAIS => null,
+            ChronopostConst::CHRONOPOST_CODE_CLIENT => null,
+            ChronopostConst::CHRONOPOST_LABEL_DIR => THELIA_LOCAL_DIR . 'chronopost',
+            ChronopostConst::CHRONOPOST_LABEL_TYPE => "PDF",
+            ChronopostConst::CHRONOPOST_PASSWORD => null,
+            ChronopostConst::CHRONOPOST_TREATMENT_STATUS => "3",
+            ChronopostConst::CHRONOPOST_PRINT_AS_CUSTOMER_STATUS => "N",
+            ChronopostConst::CHRONOPOST_EXPIRATION_DATE => null,
 
-            ChronopostConst::CHRONOPOST_FRESH_DELIVERY_13_STATUS    => false,
-            ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_13_STATUS   => false,
+            ChronopostConst::CHRONOPOST_FRESH_DELIVERY_13_STATUS => false,
+            ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_13_STATUS => false,
+            ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_18_STATUS => false,
+            ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_13_BAL_STATUS => false,
+            ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_CLASSIC_STATUS => false,
+            ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_EXPRESS_STATUS => false,
             /** @TODO Add other delivery types */
 
-            ChronopostConst::CHRONOPOST_SHIPPER_NAME1               => null,
-            ChronopostConst::CHRONOPOST_SHIPPER_NAME2               => null,
-            ChronopostConst::CHRONOPOST_SHIPPER_ADDRESS1            => ConfigQuery::read("store_address1"),
-            ChronopostConst::CHRONOPOST_SHIPPER_ADDRESS2            => ConfigQuery::read("store_address2"),
-            ChronopostConst::CHRONOPOST_SHIPPER_COUNTRY             => null,
-            ChronopostConst::CHRONOPOST_SHIPPER_CITY                => ConfigQuery::read("store_city"),
-            ChronopostConst::CHRONOPOST_SHIPPER_ZIP                 => ConfigQuery::read("store_zipcode"),
-            ChronopostConst::CHRONOPOST_SHIPPER_CIVILITY            => null,
-            ChronopostConst::CHRONOPOST_SHIPPER_CONTACT_NAME        => null,
-            ChronopostConst::CHRONOPOST_SHIPPER_PHONE               => ConfigQuery::read("store_phone"),
-            ChronopostConst::CHRONOPOST_SHIPPER_MOBILE_PHONE        => null,
-            ChronopostConst::CHRONOPOST_SHIPPER_MAIL                => ConfigQuery::read("store_email"),
+            ChronopostConst::CHRONOPOST_SHIPPER_NAME1 => null,
+            ChronopostConst::CHRONOPOST_SHIPPER_NAME2 => null,
+            ChronopostConst::CHRONOPOST_SHIPPER_ADDRESS1 => ConfigQuery::read("store_address1"),
+            ChronopostConst::CHRONOPOST_SHIPPER_ADDRESS2 => ConfigQuery::read("store_address2"),
+            ChronopostConst::CHRONOPOST_SHIPPER_COUNTRY => null,
+            ChronopostConst::CHRONOPOST_SHIPPER_CITY => ConfigQuery::read("store_city"),
+            ChronopostConst::CHRONOPOST_SHIPPER_ZIP => ConfigQuery::read("store_zipcode"),
+            ChronopostConst::CHRONOPOST_SHIPPER_CIVILITY => null,
+            ChronopostConst::CHRONOPOST_SHIPPER_CONTACT_NAME => null,
+            ChronopostConst::CHRONOPOST_SHIPPER_PHONE => ConfigQuery::read("store_phone"),
+            ChronopostConst::CHRONOPOST_SHIPPER_MOBILE_PHONE => null,
+            ChronopostConst::CHRONOPOST_SHIPPER_MAIL => ConfigQuery::read("store_email"),
         ];
 
         /** Set the default config values in the DB table */
@@ -87,20 +92,25 @@ class Chronopost extends AbstractDeliveryModule
 
         /** Check if the path given is a directory, create it otherwise */
         $dir = self::getConfigValue(ChronopostConst::CHRONOPOST_LABEL_DIR, null);
+        $fs = new Filesystem();
         if (!is_dir($dir)) {
-            @mkdir($dir);
+            $fs->mkdir($dir);
         }
 
         /** @TODO : Add other delivery types code and titles */
         $deliveryTypes = [
-            "01"     => "Chrono13",
-            "2R"    => "Fresh13",
+            "01" => "Chrono13",
+            "2R" => "Fresh13",
+            "16" => "Chrono18",
+            "58" => "Chrono13Bal",
+            "44" => "ChronoClassic",
+            "17" => "ChronoExpress",
         ];
 
         /** Set the delivery types as not enabled when activating the module for the first time */
         foreach ($deliveryTypes as $code => $title) {
-            if (null === self::isDeliveryTypeSet($code)) {
-                self::setDeliveryType($code, $title);
+            if (null === $this->isDeliveryTypeSet($code)) {
+                $this->setDeliveryType($code, $title);
             }
         }
 
@@ -176,12 +186,24 @@ class Chronopost extends AbstractDeliveryModule
     {
         $fresh13 = $request->get('chronopost-fresh13');
         $chrono13 = $request->get('chronopost-chrono13');
+        $chrono18 = $request->get('chronopost-chrono18');
+        $chrono13Bal = $request->get('chronopost-chrono13bal');
+        $chronoClassic = $request->get('chronopost-chronoclassic');
+        $chronoExpress = $request->get('chronopost-chronoexpress');
         /** @TODO Add other delivery types here */
 
         if ($chrono13) {
             return "01";
         } elseif ($fresh13) {
             return "2R";
+        } elseif ($chrono18) {
+            return "16";
+        } elseif ($chrono13Bal) {
+            return "58";
+        } elseif ($chronoClassic) {
+            return "44";
+        } elseif ($chronoExpress) {
+            return "17";
         }
 
         return null;
@@ -313,6 +335,10 @@ class Chronopost extends AbstractDeliveryModule
         $config = ChronopostConst::getConfig();
         $postageChrono13 = null;
         $postageFresh13 = null;
+        $postageChrono18 = null;
+        $postageChrono13Bal = null;
+        $postageChronoClassic = null;
+        $postageChronoExpress = null;
 
         $ret = [];
 
@@ -321,6 +347,18 @@ class Chronopost extends AbstractDeliveryModule
         }
         if ($config[ChronopostConst::CHRONOPOST_FRESH_DELIVERY_13_STATUS]) {
             $ret[] = "2R";
+        }
+        if ($config[ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_18_STATUS]) {
+            $ret[] = "16";
+        }
+        if ($config[ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_13_BAL_STATUS]) {
+            $ret[] = "58";
+        }
+        if ($config[ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_CLASSIC_STATUS]) {
+            $ret[] = "44";
+        }
+        if ($config[ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_EXPRESS_STATUS]) {
+            $ret[] = "17";
         }
 
         return $ret;
@@ -371,7 +409,7 @@ class Chronopost extends AbstractDeliveryModule
             $y = 0;
             $postage = self::getMinPostage($areaIdArray, $cartWeight, $cartAmount, $deliveryArray[$y]);
 
-            while ($deliveryArray[$y]) {
+            while (isset($deliveryArray[$y]) && !empty($deliveryArray[$y]) && null !== $deliveryArray[$y]) {
                 if ($postage > self::getMinPostage($areaIdArray, $cartWeight, $cartAmount, $deliveryArray[$y])) {
                     $postage = self::getMinPostage($areaIdArray, $cartWeight, $cartAmount, $deliveryArray[$y]);
                 }

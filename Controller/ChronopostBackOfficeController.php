@@ -37,7 +37,8 @@ class ChronopostBackOfficeController extends BaseAdminController
         $labelNbr = $this->getRequest()->get("labelNbr");
         $labelDir = $this->getRequest()->get("labelDir");
 
-        $file = $labelDir . $labelNbr;
+        $file = $labelDir .'/'. $labelNbr;
+
         if (file_exists($file)) {
             header('Content-Description: File Transfer');
             header('Content-Type: application/octet-stream');
@@ -84,6 +85,10 @@ class ChronopostBackOfficeController extends BaseAdminController
             /** Delivery types */
             Chronopost::setConfigValue(ChronopostConst::CHRONOPOST_FRESH_DELIVERY_13_STATUS, $data[ChronopostConst::CHRONOPOST_FRESH_DELIVERY_13_STATUS]);
             Chronopost::setConfigValue(ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_13_STATUS, $data[ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_13_STATUS]);
+            Chronopost::setConfigValue(ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_18_STATUS, $data[ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_18_STATUS]);
+            Chronopost::setConfigValue(ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_13_BAL_STATUS, $data[ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_13_BAL_STATUS]);
+            Chronopost::setConfigValue(ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_CLASSIC_STATUS, $data[ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_CLASSIC_STATUS]);
+            Chronopost::setConfigValue(ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_EXPRESS_STATUS, $data[ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_EXPRESS_STATUS]);
             /** @TODO Add other delivery types here */
 
         } catch (\Exception $e) {

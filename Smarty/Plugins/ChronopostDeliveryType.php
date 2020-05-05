@@ -8,6 +8,8 @@ use Chronopost\Config\ChronopostConst;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Thelia\Core\HttpFoundation\Request;
 use Thelia\Model\CountryQuery;
+use Thelia\Model\Coupon;
+use Thelia\Model\CouponQuery;
 use Thelia\Module\Exception\DeliveryException;
 use TheliaSmarty\Template\AbstractSmartyPlugin;
 use TheliaSmarty\Template\SmartyPluginDescriptor;
@@ -53,12 +55,29 @@ class ChronopostDeliveryType extends AbstractSmartyPlugin
         $cartAmount = $this->request->getSession()->getSessionCart($this->dispatcher)->getTaxedAmount($country);
 
         try {
+
             $price = Chronopost::getPostageAmount(
                 $country->getAreaId(),
                 $cartWeight,
                 $cartAmount,
                 $deliveryMode
             );
+
+            $consumedCouponsCodes = $this->request->getSession()->getConsumedCoupons();
+
+            foreach ($consumedCouponsCodes as $consumedCouponCode)  {
+                $coupon = CouponQuery::create()
+                    ->filterByCode($consumedCouponCode)
+                    ->findOne();
+
+                /** @var Coupon $coupon */
+                if(null  !== $coupon){
+                    if($coupon->isRemovingPostage()){
+                        $price = 0;
+                    }
+                }
+            }
+
         } catch (DeliveryException $ex) {
             $smarty->assign('isValidMode', false);
         }
@@ -75,6 +94,10 @@ class ChronopostDeliveryType extends AbstractSmartyPlugin
     {
         $smarty->assign('isFresh13Enabled', (bool) Chronopost::getConfigValue(ChronopostConst::CHRONOPOST_FRESH_DELIVERY_13_STATUS));
         $smarty->assign('isChrono13Enabled', (bool) Chronopost::getConfigValue(ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_13_STATUS));
+        $smarty->assign('isChrono18Enabled', (bool) Chronopost::getConfigValue(ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_18_STATUS));
+        $smarty->assign('isChrono13BalEnabled', (bool) Chronopost::getConfigValue(ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_13_BAL_STATUS));
+        $smarty->assign('isChronoClassicEnabled', (bool) Chronopost::getConfigValue(ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_CLASSIC_STATUS));
+        $smarty->assign('isChronoExpressEnabled', (bool) Chronopost::getConfigValue(ChronopostConst::CHRONOPOST_DELIVERY_CHRONO_EXPRESS_STATUS));
         /** @TODO Add other types of delivery */
     }
 
