@@ -218,6 +218,7 @@ class SetDeliveryType implements EventSubscriberInterface
         }
 
         $chronopostProductCode = ChronopostOrderQuery::create()->filterByOrderId($order->getId())->findOne()->getDeliveryCode();
+        $chronopostProductCode = str_pad($chronopostProductCode, 2, "0", STR_PAD_LEFT);
 
         $name2 = "";
         if ($customer_delivery_address->getCompany()) {
