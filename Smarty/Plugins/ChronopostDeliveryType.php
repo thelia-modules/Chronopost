@@ -72,7 +72,7 @@ class ChronopostDeliveryType extends AbstractSmartyPlugin
 
                 /** @var Coupon $coupon */
                 if(null  !== $coupon){
-                    if($coupon->isRemovingPostage()){
+                    if($coupon->getIsRemovingPostage()){
                         $price = 0;
                     }
                 }
