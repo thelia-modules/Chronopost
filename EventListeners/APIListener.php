@@ -44,9 +44,9 @@ class APIListener implements EventSubscriberInterface
             "zipCode" => $pickupLocationEvent->getZipCode(),
             "city" => $pickupLocationEvent->getCity(),
             "countryCode" => $countryCode,
-            "type" => 'T',
-            "productCode" => '58',
-            "service" => 'T',
+            "type" => 'T', /** Mandatory. Relay type to search for. T == All. */
+            "productCode" => '58', /** Type of 'Chronopost Product' (aka delivery method chosen). 58 == Standard relay point delivery in France */
+            "service" => 'T', /** Mandatory. Type of service requested. Unused as of 23/06/2020. T == All. */
             "weight" => $pickupLocationEvent->getOrderWeight(),
             "shippingDate" => $tomorrow,
             "maxPointChronopost" => $pickupLocationEvent->getMaxRelays() > 25 ? 25 : $pickupLocationEvent->getMaxRelays(),
