@@ -28,12 +28,6 @@ class APIListener implements EventSubscriberInterface
         $datetime = new \DateTime('tomorrow');
         $tomorrow = $datetime->format('d/m/Y');
 
-        $zipCode = $pickupLocationEvent->getZipCode();
-        $city = $pickupLocationEvent->getCity();
-        $address = $pickupLocationEvent->getAddress();
-        $orderWeight = $pickupLocationEvent->getOrderWeight();
-        $radius = (int)round(((float)$pickupLocationEvent->getRadius() / 1000));
-        $maxRelays = $pickupLocationEvent->getMaxRelays() > 25 ? 25 : $pickupLocationEvent->getMaxRelays();
         $countryCode = '';
 
         if ($country = $pickupLocationEvent->getCountry()) {
@@ -46,17 +40,17 @@ class APIListener implements EventSubscriberInterface
         $APIData = [
             "accountNumber" => $config[ChronopostConst::CHRONOPOST_CODE_CLIENT],
             "password" => $config[ChronopostConst::CHRONOPOST_PASSWORD],
-            "adress" => $address,
-            "zipCode" => $zipCode,
-            "city" => $city,
+            "adress" => $pickupLocationEvent->getAddress(),
+            "zipCode" => $pickupLocationEvent->getZipCode(),
+            "city" => $pickupLocationEvent->getCity(),
             "countryCode" => $countryCode,
             "type" => 'T',
             "productCode" => '58',
             "service" => 'T',
-            "weight" => $orderWeight,
+            "weight" => $pickupLocationEvent->getOrderWeight(),
             "shippingDate" => $tomorrow,
-            "maxPointChronopost" => $maxRelays,
-            "maxDistanceSearch" => $radius,
+            "maxPointChronopost" => $pickupLocationEvent->getMaxRelays() > 25 ? 25 : $pickupLocationEvent->getMaxRelays(),
+            "maxDistanceSearch" => (int)round(((float)$pickupLocationEvent->getRadius() / 1000)),
             "holidayTolerant" => '1',
             "language" => 'FR',
             "version" => '2.0',
@@ -144,7 +138,7 @@ class APIListener implements EventSubscriberInterface
      * @param PickupLocationEvent $pickupLocationEvent
      * @throws \Exception
      */
-    public function get(PickupLocationEvent $pickupLocationEvent)
+    public function getPickupLocations(PickupLocationEvent $pickupLocationEvent)
     {
         if (null !== $moduleIds = $pickupLocationEvent->getModuleIds()) {
             if (!in_array(Chronopost::getModuleId(), $moduleIds)) {
@@ -167,7 +161,7 @@ class APIListener implements EventSubscriberInterface
 
         /** Check for old versions of Thelia where the events used by the API didn't exists */
         if (class_exists(PickupLocation::class)) {
-            $listenedEvents[TheliaEvents::MODULE_DELIVERY_GET_PICKUP_LOCATIONS] = array("get", 130);
+            $listenedEvents[TheliaEvents::MODULE_DELIVERY_GET_PICKUP_LOCATIONS] = array("getPickupLocations", 130);
         }
 
         return $listenedEvents;
