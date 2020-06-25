@@ -9,6 +9,7 @@ use Chronopost\Config\ChronopostConst;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Thelia\Core\Event\Delivery\PickupLocationEvent;
 use Thelia\Core\Event\TheliaEvents;
+use Thelia\Core\Translation\Translator;
 use Thelia\Model\PickupLocation;
 use Thelia\Model\PickupLocationAddress;
 
@@ -64,7 +65,7 @@ class APIListener implements EventSubscriberInterface
             throw new \Exception($response->return->errorMessage);
         }
 
-        return $response->return->listePointRelais;
+        return property_exists($response->return, 'listePointRelais') ? $response->return->listePointRelais : null;
     }
 
     /**
@@ -126,6 +127,9 @@ class APIListener implements EventSubscriberInterface
 
         /** We set the opening hours separately since we got them as an array */
         foreach ($response->listeHoraireOuverture as $horaire) {
+            if (!property_exists($horaire, 'horairesAsString')) {
+                continue ;
+            }
             $pickupLocation->setOpeningHours(($horaire->jour - 1), $horaire->horairesAsString);
         }
 
@@ -148,6 +152,10 @@ class APIListener implements EventSubscriberInterface
 
         /** The @var array $responses from the Webservice that calls the module API */
         $responses = $this->callWebService($pickupLocationEvent);
+
+        if (null === $responses) {
+            throw new \Exception(Translator::getInstance()->trans('No pickup points were found for these informations. Maybe try with a more precise request.'));
+        }
 
         foreach ($responses as $response) {
             /** For each response, we append a new location to the list */
