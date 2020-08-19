@@ -1,3 +1,9 @@
+[DEPRECATED]
+This module is no longer maintained, please use :
+- For home delivery : https://github.com/thelia-modules/ChronopostHomeDelivery
+- For delivery in pickup point : https://github.com/thelia-modules/ChronopostPickupPoint
+
+
 # Chronopost
 
 Allows you to choose between differents delivery modes offered by Chronopost.
